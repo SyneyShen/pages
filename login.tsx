@@ -76,7 +76,12 @@ const LoginForm = ({ setMode }) => {
         </div>
       }
     >
-      <form onSubmit={(e) => e.preventDefault()}>
+      <form
+        onSubmit={(e) => {
+          console.log(e);
+          e.preventDefault();
+        }}
+      >
         <Form
           actions={
             <Button variant="primary" iconName="key">
