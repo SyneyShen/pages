@@ -8,8 +8,42 @@ import Input from '@cloudscape-design/components/input';
 import Link from '@cloudscape-design/components/link';
 import SpaceBetween from '@cloudscape-design/components/space-between';
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './login.css';
+
+import intl from 'react-intl-universal';
+import useForceUpdate from 'use-force-update';
+import ButtonDropdown from '@cloudscape-design/components/button-dropdown';
+import { ButtonDropdownProps } from '@cloudscape-design/components';
+import Spinner from '@cloudscape-design/components//spinner';
+// import enUS from './locales/en-US.json';
+// import zhCN from './locales/zh-CN.json';
+
+const LOCALES_LIST = [
+  {
+    label: 'English',
+    value: 'en-US',
+  },
+  {
+    label: '简体中文',
+    value: 'zh-CN',
+  },
+];
+
+const LOCALE_DATA = {
+  'en-US': {
+    'login.title': 'Welcome Back!',
+    'login.account.label': 'User Account',
+    'login.account.placeholder': 'Mobile Number',
+    'login.account.error.text': 'Invalid Mobile Number Format!',
+  },
+  'zh-CN': {
+    'login.title': '欢迎回来!',
+    'login.account.label': '用户账户',
+    'login.account.placeholder': '请输入手机号码',
+    'login.account.error.text': '无效的手机号码！',
+  },
+};
 
 // TODO react intl universal
 // register form
@@ -18,29 +52,102 @@ import './login.css';
 
 const LoginPage = () => {
   const [mode, setMode] = React.useState('login');
+  const forceUpdate = useForceUpdate();
+  const [initDone, setInitDone] = React.useState(false);
 
-  return (
-    <div
-      style={{
-        margin: '100px auto 100px',
-        position: 'relative',
-        width: '385px',
-        opacity: '0.8',
-      }}
+  useEffect(() => {
+    initializeIntl();
+  }, []);
+
+  const initializeIntl = () => {
+    let currentLocale = intl.determineLocale({
+      urlLocaleKey: 'lang',
+      cookieLocaleKey: 'lang',
+    });
+
+    if (!LOCALES_LIST.some((item) => item.value === currentLocale)) {
+      currentLocale = 'en-US';
+    }
+
+    setCurrentLocale(currentLocale);
+    setInitDone(true);
+
+    console.log(currentLocale);
+    console.log('init is done.');
+  };
+
+  const setCurrentLocale = (currentLocale: string) => {
+    intl.init({
+      currentLocale,
+      locales: LOCALE_DATA,
+    });
+  };
+
+  const onLocaleChange = (e) => {
+    setCurrentLocale(e.detail.id);
+    console.log(e.detail.id);
+    forceUpdate();
+  };
+
+  const localeSelector = (
+    <ButtonDropdown
+      items={LOCALES_LIST.map((locale) => {
+        return { id: locale.value, text: locale.label };
+      })}
+      onItemClick={onLocaleChange}
     >
-      <div style={{ 'text-align': 'center' }}>
-        <img
-          width={120}
-          src="https://img.icons8.com/external-flat-satawat-anukul/64/null/external-trading-trading-flat-style-flat-satawat-anukul-24.png"
-        />
-        <p>Data Expert beside You</p>
-      </div>
-
-      {mode === 'login' && <LoginForm setMode={setMode} />}
-      {mode === 'signup' && <RegisterForm setMode={setMode} />}
-      {mode === 'forgotpassword' && <ForgotPasswordForm setMode={setMode} />}
-    </div>
+      {
+        LOCALES_LIST.find(
+          (locale) => locale.value == intl.getInitOptions().currentLocale
+        )?.label
+      }
+    </ButtonDropdown>
   );
+
+  if (!initDone) {
+    return (
+      <div
+        style={{
+          background: '#ffffff',
+          width: '100%',
+          height: '100%',
+          'text-align': 'center',
+        }}
+      >
+        <Spinner />
+        <br />
+        Loading
+      </div>
+    );
+  } else {
+    return (
+      <div
+        style={{
+          margin: '100px auto 100px',
+          position: 'relative',
+          width: '385px',
+          opacity: '0.8',
+        }}
+      >
+        <div style={{ height: '40px' }}>
+          <span style={{ float: 'right' }}>{localeSelector}</span>
+        </div>
+        <div>
+          <center>
+            <img
+              width={120}
+              src="https://img.icons8.com/external-flat-satawat-anukul/64/null/external-trading-trading-flat-style-flat-satawat-anukul-24.png"
+            />
+            <p>Data Expert beside You</p>
+          </center>
+        </div>
+
+        {mode === 'login' && <LoginForm setMode={setMode} />}
+        {mode === 'signup' && <RegisterForm setMode={setMode} />}
+        {mode === 'forgotpassword' && <ForgotPasswordForm setMode={setMode} />}
+      </div>
+    );
+  }
 };
 
 const LoginForm = ({ setMode }) => {
@@ -48,7 +155,7 @@ const LoginForm = ({ setMode }) => {
   const [password, setPassword] = useState('');
   return (
     <Container
-      header={<Header variant="h2">Welcome Back!</Header>}
+      header={<Header variant="h2">{intl.get('login.title')}</Header>}
       footer={
         <div>
           <span>
@@ -90,15 +197,15 @@ const LoginForm = ({ setMode }) => {
           }
         >
           <FormField
-            label="Account"
+            label={intl.get('login.account.label')}
             errorText={
               account != '' &&
               !checkMobileNum(account) &&
-              'Invalid Mobile Number Format!'
+              intl.get('login.account.error.text')
             }
           >
             <Input
-              placeholder="Mobile Phone Number"
+              placeholder={intl.get('login.account.placeholder')}
               value={account}
               onChange={(event: { detail: { value: string } }) => {
                 if (event.detail.value.length <= 11) {

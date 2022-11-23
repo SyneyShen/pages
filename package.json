@@ -8,7 +8,9 @@
     "@types/react": "^18.0.8",
     "@types/react-dom": "^18.0.2",
     "react": "^18.1.0",
-    "react-dom": "^18.1.0"
+    "react-dom": "^18.1.0",
+    "react-intl-universal": "^2.6.11",
+    "use-force-update": "^1.0.10"
   },
   "scripts": {
     "start": "react-scripts start",
