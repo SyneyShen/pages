@@ -16,6 +16,7 @@ import useForceUpdate from 'use-force-update';
 import ButtonDropdown from '@cloudscape-design/components/button-dropdown';
 import { ButtonDropdownProps } from '@cloudscape-design/components';
 import Spinner from '@cloudscape-design/components//spinner';
+import { useCookies } from 'react-cookie';
 // import enUS from './locales/en-US.json';
 // import zhCN from './locales/zh-CN.json';
 
@@ -51,9 +52,10 @@ const LOCALE_DATA = {
 // submit form
 
 const LoginPage = () => {
-  const [mode, setMode] = React.useState('login');
+  const [mode, setMode] = React.useState('loginbypassword');
   const forceUpdate = useForceUpdate();
   const [initDone, setInitDone] = React.useState(false);
+  const [cookies, setCookie, removeCookie] = useCookies(['lang']);
 
   useEffect(() => {
     initializeIntl();
@@ -70,10 +72,11 @@ const LoginPage = () => {
     }
 
     setCurrentLocale(currentLocale);
+    setCookie('lang', currentLocale);
     setInitDone(true);
 
     console.log(currentLocale);
-    console.log('init is done.');
+    console.log('init is done. 1111111111');
   };
 
   const setCurrentLocale = (currentLocale: string) => {
@@ -85,6 +88,7 @@ const LoginPage = () => {
 
   const onLocaleChange = (e) => {
     setCurrentLocale(e.detail.id);
+    setCookie('lang', e.detail.id);
     console.log(e.detail.id);
     forceUpdate();
   };
@@ -142,20 +146,38 @@ const LoginPage = () => {
           </center>
         </div>
 
-        {mode === 'login' && <LoginForm setMode={setMode} />}
+        {mode === 'loginbypassword' && <PasswordLoginForm setMode={setMode} />}
         {mode === 'signup' && <RegisterForm setMode={setMode} />}
         {mode === 'forgotpassword' && <ForgotPasswordForm setMode={setMode} />}
+        {mode === 'loginbycode' && <CodeLoginForm setMode={setMode} />}
       </div>
     );
   }
 };
 
-const LoginForm = ({ setMode }) => {
+const PasswordLoginForm = ({ setMode }) => {
   const [account, setAccount] = useState('');
   const [password, setPassword] = useState('');
   return (
     <Container
-      header={<Header variant="h2">{intl.get('login.title')}</Header>}
+      header={
+        <Header
+          variant="h2"
+          actions={
+            <Button
+              href="#"
+              variant="link"
+              onClick={() => {
+                setMode('loginbycode');
+              }}
+            >
+              Sign In by Code
+            </Button>
+          }
+        >
+          {intl.get('login.title')}
+        </Header>
+      }
       footer={
         <div>
           <span>
@@ -251,7 +273,7 @@ const RegisterForm = ({ setMode }) => {
             href="#"
             variant="link"
             onClick={() => {
-              setMode('login');
+              setMode('loginbypassword');
             }}
           >
             Back to Sign in
@@ -286,7 +308,6 @@ const RegisterForm = ({ setMode }) => {
                   }
                 }}
               />
-              {/* <Input /> */}
               <Button>Get Code</Button>
             </SpaceBetween>
           </FormField>
@@ -364,7 +385,7 @@ const ForgotPasswordForm = ({ setMode }) => {
             href="#"
             variant="link"
             onClick={() => {
-              setMode('login');
+              setMode('loginbypassword');
             }}
           >
             Back to Sign in
@@ -399,7 +420,6 @@ const ForgotPasswordForm = ({ setMode }) => {
                   }
                 }}
               />
-              {/* <Input /> */}
               <Button disabled={!checkMobileNum(account)}>Get Code</Button>
             </SpaceBetween>
           </FormField>
@@ -454,6 +474,81 @@ const ForgotPasswordForm = ({ setMode }) => {
               onChange={(event: { detail: { value: string } }) =>
                 setConfirmPassword(event.detail.value)
               }
+            />
+          </FormField>
+        </Form>
+      </form>
+    </Container>
+  );
+};
+
+const CodeLoginForm = ({ setMode }) => {
+  const [account, setAccount] = useState('');
+  const [code, setCode] = useState('');
+  return (
+    <Container
+      header={<Header variant="h2">Sign In</Header>}
+      footer={
+        <span>
+          <Button
+            href="#"
+            variant="link"
+            onClick={() => {
+              setMode('loginbypassword');
+            }}
+          >
+            Back to Sign in by Password
+          </Button>
+        </span>
+      }
+    >
+      <form onSubmit={(e) => e.preventDefault()}>
+        <Form
+          actions={
+            <Button variant="primary" iconName="key">
+              Sign In
+            </Button>
+          }
+        >
+          <FormField
+            label="New Account"
+            stretch
+            errorText={
+              account != '' &&
+              !checkMobileNum(account) &&
+              'Invalid Mobile Number Format!'
+            }
+          >
+            <SpaceBetween size={'xxl'} direction="horizontal">
+              <Input
+                placeholder="Mobile Phone Number"
+                value={account}
+                onChange={(event: { detail: { value: string } }) => {
+                  if (event.detail.value.length <= 11) {
+                    setAccount(event.detail.value);
+                  }
+                }}
+              />
+              <Button>Get Code</Button>
+            </SpaceBetween>
+          </FormField>
+          <FormField
+            label="Verification Code"
+            errorText={
+              code != '' &&
+              !checkVerificationCode(code) &&
+              'Invalid Verification Code'
+            }
+          >
+            <Input
+              placeholder="Verification Code"
+              type="text"
+              value={code}
+              onChange={(event: { detail: { value: string } }) => {
+                if (event.detail.value.length <= 5) {
+                  setCode(event.detail.value);
+                }
+              }}
             />
           </FormField>
         </Form>
