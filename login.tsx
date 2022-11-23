@@ -17,8 +17,6 @@ import ButtonDropdown from '@cloudscape-design/components/button-dropdown';
 import { ButtonDropdownProps } from '@cloudscape-design/components';
 import Spinner from '@cloudscape-design/components//spinner';
 import { useCookies } from 'react-cookie';
-// import enUS from './locales/en-US.json';
-// import zhCN from './locales/zh-CN.json';
 
 const LOCALES_LIST = [
   {
@@ -46,38 +44,33 @@ const LOCALE_DATA = {
   },
 };
 
-// TODO react intl universal
-// register form
-// forgot password form
-// submit form
-
 const LoginPage = () => {
   const [mode, setMode] = React.useState('loginbypassword');
   const forceUpdate = useForceUpdate();
-  const [initDone, setInitDone] = React.useState(false);
+  // const [initDone, setInitDone] = React.useState(false);
   const [cookies, setCookie, removeCookie] = useCookies(['lang']);
 
-  useEffect(() => {
-    initializeIntl();
-  }, []);
+  // useEffect(() => {
+  //   initializeIntl();
+  // }, []);
 
-  const initializeIntl = () => {
-    let currentLocale = intl.determineLocale({
-      urlLocaleKey: 'lang',
-      cookieLocaleKey: 'lang',
-    });
+  // const initializeIntl = () => {
+  //   let currentLocale = intl.determineLocale({
+  //     urlLocaleKey: 'lang',
+  //     cookieLocaleKey: 'lang',
+  //   });
 
-    if (!LOCALES_LIST.some((item) => item.value === currentLocale)) {
-      currentLocale = 'en-US';
-    }
+  //   if (!LOCALES_LIST.some((item) => item.value === currentLocale)) {
+  //     currentLocale = 'en-US';
+  //   }
 
-    setCurrentLocale(currentLocale);
-    setCookie('lang', currentLocale);
-    setInitDone(true);
+  //   setCurrentLocale(currentLocale);
+  //   setCookie('lang', currentLocale);
+  //   setInitDone(true);
 
-    console.log(currentLocale);
-    console.log('init is done. 1111111111');
-  };
+  //   console.log(currentLocale);
+  //   console.log('init is done. 1111111111');
+  // };
 
   const setCurrentLocale = (currentLocale: string) => {
     intl.init({
@@ -108,51 +101,51 @@ const LoginPage = () => {
     </ButtonDropdown>
   );
 
-  if (!initDone) {
-    return (
-      <div
-        style={{
-          background: '#ffffff',
-          width: '100%',
-          height: '100%',
-          'text-align': 'center',
-        }}
-      >
-        <Spinner />
-        <br />
-        Loading
+  // if (!initDone) {
+  //   return (
+  //     <div
+  //       style={{
+  //         background: '#ffffff',
+  //         width: '100%',
+  //         height: '100%',
+  //         'text-align': 'center',
+  //       }}
+  //     >
+  //       <Spinner />
+  //       <br />
+  //       Loading
+  //     </div>
+  //   );
+  // } else {
+  return (
+    <div
+      style={{
+        margin: '100px auto 100px',
+        position: 'relative',
+        width: '385px',
+        opacity: '0.8',
+      }}
+    >
+      <div style={{ height: '40px' }}>
+        <span style={{ float: 'right' }}>{localeSelector}</span>
       </div>
-    );
-  } else {
-    return (
-      <div
-        style={{
-          margin: '100px auto 100px',
-          position: 'relative',
-          width: '385px',
-          opacity: '0.8',
-        }}
-      >
-        <div style={{ height: '40px' }}>
-          <span style={{ float: 'right' }}>{localeSelector}</span>
-        </div>
-        <div>
-          <center>
-            <img
-              width={120}
-              src="https://img.icons8.com/external-flat-satawat-anukul/64/null/external-trading-trading-flat-style-flat-satawat-anukul-24.png"
-            />
-            <p>Data Expert beside You</p>
-          </center>
-        </div>
+      <div>
+        <center>
+          <img
+            width={120}
+            src="https://img.icons8.com/external-flat-satawat-anukul/64/null/external-trading-trading-flat-style-flat-satawat-anukul-24.png"
+          />
+          <p className="login-sub-title">Data Expert beside You</p>
+        </center>
+      </div>
 
-        {mode === 'loginbypassword' && <PasswordLoginForm setMode={setMode} />}
-        {mode === 'signup' && <RegisterForm setMode={setMode} />}
-        {mode === 'forgotpassword' && <ForgotPasswordForm setMode={setMode} />}
-        {mode === 'loginbycode' && <CodeLoginForm setMode={setMode} />}
-      </div>
-    );
-  }
+      {mode === 'loginbypassword' && <PasswordLoginForm setMode={setMode} />}
+      {mode === 'signup' && <RegisterForm setMode={setMode} />}
+      {mode === 'forgotpassword' && <ForgotPasswordForm setMode={setMode} />}
+      {mode === 'loginbycode' && <CodeLoginForm setMode={setMode} />}
+    </div>
+  );
+  // }
 };
 
 const PasswordLoginForm = ({ setMode }) => {
@@ -165,7 +158,6 @@ const PasswordLoginForm = ({ setMode }) => {
           variant="h2"
           actions={
             <Button
-              href="#"
               variant="link"
               onClick={() => {
                 setMode('loginbycode');
@@ -182,7 +174,6 @@ const PasswordLoginForm = ({ setMode }) => {
         <div>
           <span>
             <Button
-              href="#"
               variant="link"
               onClick={() => {
                 setMode('signup');
@@ -193,7 +184,6 @@ const PasswordLoginForm = ({ setMode }) => {
           </span>
           <span style={{ float: 'right' }}>
             <Button
-              href="#"
               variant="link"
               onClick={(_) => {
                 setMode('forgotpassword');
@@ -270,7 +260,6 @@ const RegisterForm = ({ setMode }) => {
       footer={
         <span>
           <Button
-            href="#"
             variant="link"
             onClick={() => {
               setMode('loginbypassword');
@@ -382,7 +371,6 @@ const ForgotPasswordForm = ({ setMode }) => {
       footer={
         <span>
           <Button
-            href="#"
             variant="link"
             onClick={() => {
               setMode('loginbypassword');
@@ -491,7 +479,6 @@ const CodeLoginForm = ({ setMode }) => {
       footer={
         <span>
           <Button
-            href="#"
             variant="link"
             onClick={() => {
               setMode('loginbypassword');

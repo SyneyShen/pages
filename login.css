@@ -14,7 +14,7 @@ body,
   /* background by SVGBackgrounds.com */
 }
 
-p {
+.login-sub-title {
   text-align: center;
   font-family: 'Open Sans';
   font-size: 16px;
